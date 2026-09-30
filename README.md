@@ -70,3 +70,24 @@ flowchart TD
     MPI --> Res3["Execution Time: 92.98s<br/>Speedup: 2.63x"]
     CUDA --> Res4["Execution Time: 0.165s<br/>Speedup: 1479.48x"]
 ```
+### Architectural Breakdown
+
+#### 1. Sequential CPU Execution
+Execution follows a traditional single-threaded, triple-nested loop ($O(N^3)$ complexity). Instructions run strictly sequentially on a single CPU core without hardware concurrency.
+
+#### 2. OpenMP (Shared Memory)
+OpenMP uses compiler directives (`#pragma omp parallel for`) to fork 8 worker threads sharing a single unified memory address space. Loop iterations are dynamically divided across CPU cores.
+
+#### 3. MPI (Distributed Memory)
+MPI operates across disjoint memory address spaces over a virtual network connecting 4 Ubuntu VMs (`master`, `worker1`, `worker2`, `worker3`). 
+- **Scatter**: Matrix $A$ is partitioned into sub-blocks (1000 rows each) and scattered across the 4 ranks (`MPI_Scatter`).
+- **Broadcast**: Matrix $B$ is duplicated to all ranks (`MPI_Bcast`).
+- **Gather**: Computed partial results are assembled back into Matrix $C$ on Rank 0 (`MPI_Gather`).
+
+#### 4. CUDA (Massively Parallel SIMT)
+CUDA offloads computation from host CPU memory to device GPU memory via PCIe bus. The computation is structured into a 2D execution grid:
+- **Grid Configuration**: $250 \times 250 = 62,500$ blocks
+- **Block Configuration**: $16 \times 16 = 256$ threads/block
+- **Total Logical GPU Threads**: $16,000,000$ threads running concurrently.
+
+---
