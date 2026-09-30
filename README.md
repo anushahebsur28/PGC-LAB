@@ -44,10 +44,13 @@ flowchart LR
    Implement a uniform 4000 × 4000 matrix multiplication workload
    using Sequential, OpenMP, MPI and CUDA.
 
-2. **Correctness Verification**
-
+2. **Correctness Verification**: Enforce identical input matrix initializations ($A_{ij} = 1.0, B_{ij} = 1.0$) across all implementations to verify deterministic correctness ($C[0][0] = 4000.00$).
    All implementations use:
 
    ```text
    A[i][j] = 1.0
    B[i][j] = 1.0
+
+3. **Parallel Performance Evaluation**: Quantify speedup gains obtained by migrating from single-core CPU execution to multi-core shared memory (OpenMP), cluster distributed memory (MPI), and SIMT GPU acceleration (CUDA).
+4. **Overhead Analysis**: Analyze communication latency in network-bound MPI clusters and host-to-device memory transfer overheads ($H2D$ / $D2H$) in CUDA.
+
