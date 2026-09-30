@@ -37,3 +37,17 @@ flowchart LR
 > **CUDA GPU acceleration achieved an overall execution time of 0.165 seconds (0.146s kernel execution) — representing a 1,479.48× speedup over single-threaded sequential CPU execution (244.12s) and a 186.85× speedup over 8-thread OpenMP shared-memory execution (30.83s).**
 
 ---
+## 1. Experiment Objectives
+
+1. **Multi-Model Parallelization**
+
+   Implement a uniform 4000 × 4000 matrix multiplication workload
+   using Sequential, OpenMP, MPI and CUDA.
+
+2. **Correctness Verification**
+
+   All implementations use:
+
+   ```text
+   A[i][j] = 1.0
+   B[i][j] = 1.0
