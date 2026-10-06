@@ -91,3 +91,32 @@ CUDA offloads computation from host CPU memory to device GPU memory via PCIe bus
 - **Total Logical GPU Threads**: $16,000,000$ threads running concurrently.
 
 ---
+## 3. Workload Specification
+
+- **Matrix Dimension ($N$)**: $4000 \times 4000$
+- **Input Matrix $A$**: $A[i][j] = 1.0$ for all $i, j$
+- **Input Matrix $B$**: $B[i][j] = 1.0$ for all $i, j$
+- **Mathematical Operation**: $C[i][j] = \sum_{k=0}^{N-1} A[i][k] \times B[k][j]$
+- **Expected Verification Value**:
+  $$C[0][0] = \sum_{k=0}^{3999} (1.0 \times 1.0) = 4000.00$$
+
+---
+
+## 4. Source Code References
+
+All complete source code files are located in the [`src/`](src/) directory:
+
+| Computing Paradigm | Source File Link | Description / Implementation Highlights |
+| :--- | :--- | :--- |
+| **Sequential CPU** | [`src/sequential/matrix_sequential.c`](src/sequential/matrix_sequential.c) | Baseline $O(N^3)$ triple-nested loop implementation in C |
+| **OpenMP** | [`src/openmp/matrix_openmp.c`](src/openmp/matrix_openmp.c) | `#pragma omp parallel for private(j, k)` shared-memory multi-threading |
+| **MPI Distributed** | [`src/mpi/matrix_mpi.c`](src/mpi/matrix_mpi.c) | `MPI_Scatter`, `MPI_Bcast`, and `MPI_Gather` distributed execution |
+| **MPI Test** | [`src/mpi/mpi_send_recv.c`](src/mpi/mpi_send_recv.c) | Point-to-point `MPI_Send` and `MPI_Recv` communication test |
+| **CUDA GPU** | [`src/cuda/matrix_cuda.cu`](src/cuda/matrix_cuda.cu) | CUDA kernel `matMulKernel<<<grid, block>>>` with 16 million GPU threads |
+
+---
+
+## 5. Empirical Results & Screenshots
+
+### 5.1 Sequential Baseline Output
+Execution completed in **380.87 seconds** with correct verification $C[0][0] = 4000.00$.
